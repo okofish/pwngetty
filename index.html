@@ -1,13 +1,13 @@
 <html>
 
 <head>
-  <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.2/css/foundation.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.2/js/vendor/modernizr.js"></script>
+  <link rel="stylesheet" href="foundation.css">
+  <script src="modernizr.js"></script>
 
-  <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="jquery-1.11.3.min.js"></script>
   <script src="parse-1.4.2.min.js"></script>
   <script type="text/javascript">
-    // change these to the app id and javascript key of your parse application. i'm leaving mine in here because they're not secret. they can be user-facing.
+    // change these to the app id and javascript key of your parse application. i'm leaving mine in here because they're not secret; they can be user-facing.
     Parse.initialize("DhF3oT0trGQepchYLDYM9n5A1ZbIJnnWoZHAg7IX", "40IKmS9WBxum5xd0Fkm1GVPk28pUCmqXfTEYlZCd");
   </script>
 </head>
@@ -43,29 +43,38 @@
         var embedtext = $('#embed').val();
         var embedel = $('<div></div>');
         embedel.html(embedtext);
-        var iframesrc = $('iframe', embedel)[0].src.replace(/.*?:\/\//g, ""); // removing protocol so page can be run locally
-        Parse.Cloud.run('getImageURL', {  // calling a parse cloud function because we can't use xmlhttprequest
-          iframe: 'http://' + iframesrc // tacking the protocol back on again
-        }, {
-          success: function(imageattributes) {
-            var imgsrc = imageattributes.src;
-            var imgheight = imageattributes.height;
-            var imgwidth = imageattributes.width;
 
-            var alertdiv = $('#alertbox');
-            alertdiv.html('<div data-alert class="alert-box info" id="urlbox"><a href="' + imgsrc + '" target="_blank">Here\'s the image!</a> It\'s ' + imgwidth.toString() + 'x' + imgheight.toString() +
-              ' px.<a href="#" class="close">&times;</a></div>');
-          },
-          error: function(err) {
-            console.error(err)
-            var errordiv = $('#alertbox');
-            if (err.message.indexOf('Usually this means the embed code is invalid.') != -1) { // see main.js for explanation
-              errordiv.html('<div data-alert class="alert-box alert" id="errorbox"><b>Uh oh!</b> The embed code parser returned an error. It looks like your embed code is invalid.<a href="#" class="close">&times;</a></div>');
-            } else {
-              errordiv.html('<div data-alert class="alert-box alert" id="errorbox"><b>Uh oh!</b> The embed code parser returned an error. Check your console for more information.<a href="#" class="close">&times;</a></div>');
+
+        try {
+          var iframesrc = $('iframe', embedel)[0].src.replace(/.*?:\/\//g, ""); // removing protocol so page can be run locally
+          Parse.Cloud.run('getImageURL', {  // calling a parse cloud function because we can't use xmlhttprequest
+            iframe: 'http://' + iframesrc // tacking the protocol back on again
+          }, {
+            success: function(imageattributes) {
+              var imgsrc = imageattributes.src;
+              var imgheight = imageattributes.height;
+              var imgwidth = imageattributes.width;
+
+              var alertdiv = $('#alertbox');
+              alertdiv.html('<div data-alert class="alert-box info" id="urlbox"><a href="' + imgsrc + '" target="_blank">Here\'s the image!</a> It\'s ' + imgwidth.toString() + 'x' + imgheight.toString() +
+                ' px.<a href="#" class="close">&times;</a></div>');
+            },
+            error: function(err) {
+              console.error(err)
+              var errordiv = $('#alertbox');
+              if (err.message.indexOf('Usually this means the embed code is invalid.') != -1) { // see main.js for explanation
+                errordiv.html('<div data-alert class="alert-box alert" id="errorbox"><b>Uh oh!</b> The embed code parser returned an error. It looks like your embed code is invalid.<a href="#" class="close">&times;</a></div>');
+              } else {
+                errordiv.html('<div data-alert class="alert-box alert" id="errorbox"><b>Uh oh!</b> The embed code parser returned an error. Check your console for more information.<a href="#" class="close">&times;</a></div>');
+              }
             }
-          }
-        });
+          });
+        } catch (e) {
+          console.error(e)
+          var errordiv = $('#alertbox');
+          errordiv.html('<div data-alert class="alert-box alert" id="errorbox"><b>Uh oh!</b> The embed code doesnt contain a proper iframe. Check to make sure you copied all of it.<a href="#" class="close">&times;</a></div>');
+        }
+
       });
     </script>
 

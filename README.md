@@ -1,5 +1,5 @@
 # pwngetty
-**A demonstration of how stupidly easy it is to get unwatermarked medium-res images from Getty Images' embed code.**
+**A demonstration of how stupidly easy it is to get unwatermarked medium-res images from Getty Images embed code.**
 
 In March 2014 the world's leading stock photo company, Getty Images, announced that it would be making over 50 million of its images available to embed for noncommercial use. One might assume that they would be heavily-protected, maybe with complex obfuscated JavaScript or a Flash applet. It turns out, however, that they're just regular img tags!<sup>1</sup>
 
