@@ -1,0 +1,17 @@
+{
+  "global": {
+    "parseVersion": "1.4.2"
+  },
+  "applications": {
+    "_default": {
+      "link": "pwngetty"
+    },
+    "parse": {
+      "link": "pwngetty"
+    },
+    "pwngetty": {
+      "applicationId": "YOURAPPID",
+      "masterKey": "YOURMASTERKEY"
+    }
+  }
+}

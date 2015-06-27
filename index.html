@@ -1,0 +1,74 @@
+<html>
+
+<head>
+  <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.2/css/foundation.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.2/js/vendor/modernizr.js"></script>
+
+  <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="parse-1.4.2.min.js"></script>
+  <script type="text/javascript">
+    // change these to the app id and javascript key of your parse application. i'm leaving mine in here because they're not secret. they can be user-facing.
+    Parse.initialize("DhF3oT0trGQepchYLDYM9n5A1ZbIJnnWoZHAg7IX", "40IKmS9WBxum5xd0Fkm1GVPk28pUCmqXfTEYlZCd");
+  </script>
+</head>
+
+<body style="padding-top: 20px; padding-left: 10px">
+  <a href="https://github.com/okofish/pwngetty">
+    <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67"
+    alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png">
+  </a>
+  <h1>pwngetty</h1>
+  <h3 class="subheader"><i>by <a href="https://jesse.ws">Jesse Friedman</a></i></h2>
+    <br>
+    <div id="alertbox">
+    </div>
+    <label>Embed Code
+      <textarea id="embed" autofocus="1" rows="7">
+      </textarea>
+    </label>
+    <button id="extract">Extract image</button>
+    <br>
+    <br>
+    <dl>
+      <dt>Where do I find the embed code?</dt>
+      <dd>
+        <img src="embedbutton.png" />
+      </dd>
+      <dt>Is this illegal?</dt>
+      <dd>Depends on what you mean. Is me making this page illegal? No. Is you trying this page out illegal? I doubt it. Is you using an unwatermarked image this page produces for you on your site illegal? Probably.</dd>
+    </dl>
+
+    <script type="text/javascript">
+      $('#extract').click(function() {  // when extract button is clicked
+        var embedtext = $('#embed').val();
+        var embedel = $('<div></div>');
+        embedel.html(embedtext);
+        var iframesrc = $('iframe', embedel)[0].src.replace(/.*?:\/\//g, ""); // removing protocol so page can be run locally
+        Parse.Cloud.run('getImageURL', {  // calling a parse cloud function because we can't use xmlhttprequest
+          iframe: 'http://' + iframesrc // tacking the protocol back on again
+        }, {
+          success: function(imageattributes) {
+            var imgsrc = imageattributes.src;
+            var imgheight = imageattributes.height;
+            var imgwidth = imageattributes.width;
+
+            var alertdiv = $('#alertbox');
+            alertdiv.html('<div data-alert class="alert-box info" id="urlbox"><a href="' + imgsrc + '" target="_blank">Here\'s the image!</a> It\'s ' + imgheight.toString() + 'x' + imgwidth.toString() +
+              ' px.<a href="#" class="close">&times;</a></div>');
+          },
+          error: function(err) {
+            console.error(err)
+            var errordiv = $('#alertbox');
+            if (err.message.indexOf('Usually this means the embed code is invalid.') != -1) { // see main.js for explanation
+              errordiv.html('<div data-alert class="alert-box alert" id="errorbox"><b>Uh oh!</b> The embed code parser returned an error. It looks like your embed code is invalid.<a href="#" class="close">&times;</a></div>');
+            } else {
+              errordiv.html('<div data-alert class="alert-box alert" id="errorbox"><b>Uh oh!</b> The embed code parser returned an error. Check your console for more information.<a href="#" class="close">&times;</a></div>');
+            }
+          }
+        });
+      });
+    </script>
+
+</body>
+
+</html>
